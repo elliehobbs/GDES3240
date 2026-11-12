@@ -148,6 +148,8 @@ h1 {
 
 h1 span {
   display:block;
+  /* Compensate for the initial I's 93/1000 em side bearing in Valley Sans. */
+  margin-left:-.093em;
   opacity:0;
   transform:translateY(14px);
   animation:rise 1.8s cubic-bezier(.22,.61,.36,1) .25s forwards;
