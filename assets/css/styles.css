@@ -576,6 +576,291 @@ footer h3 {
   grid-column:1/3;
 }
 
+/* works page */
+nav.top {
+  border-top:0;
+}
+
+nav.top .nt {
+  pointer-events:auto;
+}
+
+nav.top .nt:hover {
+  text-decoration:none;
+}
+
+.wh {
+  padding-top:14.7vw;
+  align-items:center;
+}
+
+/* Reset the home page's dark h1 bar. */
+.wh-t {
+  grid-column:2/6;
+  grid-row:1;
+  background:none;
+  color:inherit;
+  font:400 2.5vw/1 var(--sans);
+  text-transform:none;
+  padding:0;
+  margin-bottom:2.2vw;
+  overflow:visible;
+}
+
+.ws {
+  grid-column:2/5;
+  grid-row:2;
+  height:3.4vw;
+  min-height:36px;
+  border:1px solid #111;
+  border-radius:0;
+  background:#fff;
+  color:#111;
+  padding:0 1.2vw;
+  font:400 max(14px,1.3vw)/1 var(--sans);
+  -webkit-appearance:none;
+  appearance:none;
+}
+
+.ws::placeholder {
+  color:#111;
+}
+
+.ws:focus {
+  outline:none;
+  box-shadow:inset 0 0 0 1px #111;
+}
+
+.ws::-webkit-search-cancel-button {
+  -webkit-appearance:none;
+}
+
+/* Chips: one column wide each, so three sit under the search bar per row. */
+.wchips {
+  grid-column:2/5;
+  grid-row:3;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:var(--g);
+  margin-top:var(--g);
+  min-height:max(32px,2.6vw);
+  align-self:start;
+}
+
+.chip,.wclear {
+  height:max(32px,2.6vw);
+  border:1px solid #111;
+  border-radius:0;
+  padding:0 .4vw;
+  font:400 max(12px,1.05vw)/1 var(--sans);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  cursor:pointer;
+  animation:chip-in .4s ease;
+}
+
+.chip {
+  background:#fff;
+  color:#111;
+  transition:color .25s ease,border-color .25s ease;
+}
+
+.chip:hover {
+  color:#9a9a9a;
+  border-color:#9a9a9a;
+}
+
+.wclear {
+  background:#111;
+  color:#fff;
+  font:400 max(11px,.92vw)/1 var(--mono);
+  padding:0;
+  text-overflow:clip;
+  text-transform:uppercase;
+  transition:background .25s ease;
+}
+
+.wclear:hover {
+  background:#444;
+}
+
+@keyframes chip-in {
+  from {
+    opacity:0;
+    transform:translateY(-4px);
+  }
+}
+
+/* Filter menus: label in one column, arrow in the next. */
+.wf {
+  grid-row:2;
+  grid-column:span 2;
+  display:grid;
+  grid-template-columns:subgrid;
+  align-items:center;
+  position:relative;
+  z-index:5;
+}
+
+.wf[data-group=medium] {
+  grid-column:6/8;
+}
+
+.wf[data-group=category] {
+  grid-column:8/10;
+}
+
+.wf[data-group=period] {
+  grid-column:10/12;
+}
+
+.wf-l {
+  font:400 max(13px,1.35vw)/1 var(--sans);
+}
+
+.wf-c {
+  position:relative;
+}
+
+.wf-b {
+  display:block;
+  padding:0;
+  border:0;
+  background:none;
+  color:#111;
+  cursor:pointer;
+}
+
+.wf-a {
+  display:block;
+  width:1.9vw;
+  height:2.1vw;
+  min-width:18px;
+  min-height:20px;
+  transition:transform .5s cubic-bezier(.22,.61,.36,1);
+}
+
+.wf.open .wf-a {
+  transform:rotate(90deg);
+}
+
+/* The list rolls down from under the arrow and fades in. Its top padding
+   bridges the gap so the pointer can travel from arrow to items. */
+.wf-ls {
+  position:absolute;
+  top:100%;
+  left:0;
+  list-style:none;
+  padding:2.2vw 2vw 1vw 0;
+  margin:0;
+  clip-path:inset(0 0 100% 0);
+  opacity:0;
+  visibility:hidden;
+  transition:clip-path .55s cubic-bezier(.22,.61,.36,1),opacity .45s ease,visibility 0s linear .55s;
+}
+
+.wf.open .wf-ls {
+  clip-path:inset(0 -1vw -1vw 0);
+  opacity:1;
+  visibility:visible;
+  transition:clip-path .55s cubic-bezier(.22,.61,.36,1),opacity .45s ease,visibility 0s;
+}
+
+.wf-ls button {
+  display:block;
+  padding:0;
+  border:0;
+  background:none;
+  color:#111;
+  font:400 max(12px,1.05vw)/1.25 var(--sans);
+  white-space:nowrap;
+  text-align:left;
+  cursor:pointer;
+  transition:color .25s ease;
+}
+
+.wf-ls button:hover,.wf-ls button.on {
+  color:#9a9a9a;
+}
+
+/* Gallery: left lane stacks against column 5, right lane runs in rows from column 6.
+   Slot widths are whole grid columns (cqw = gallery content width). */
+.wg {
+  container-type:inline-size;
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  column-gap:var(--g);
+  align-items:start;
+  padding:0 var(--m) 7.6vw;
+  margin-top:15.6vw;
+  transition:opacity .3s ease;
+}
+
+.wg.is-changing {
+  opacity:0;
+}
+
+.wg:not(.laid)>.wk {
+  grid-column:span 3;
+  margin-bottom:var(--g);
+}
+
+.wl-l {
+  grid-column:1/6;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:var(--g);
+}
+
+.wl-r {
+  grid-column:6/13;
+  display:flex;
+  flex-direction:column;
+  gap:var(--g);
+}
+
+.wr {
+  display:flex;
+  align-items:flex-start;
+  gap:var(--g);
+}
+
+.wk {
+  flex:none;
+}
+
+.wk .ph {
+  aspect-ratio:var(--ar,3/4);
+  background:#d9d9d9;
+}
+
+.wk img {
+  width:100%;
+  height:auto;
+}
+
+.s2 { width:calc(2*(100cqw - 11*var(--g))/12 + 1*var(--g)); }
+.s3 { width:calc(3*(100cqw - 11*var(--g))/12 + 2*var(--g)); }
+.s4 { width:calc(4*(100cqw - 11*var(--g))/12 + 3*var(--g)); }
+.s5 { width:calc(5*(100cqw - 11*var(--g))/12 + 4*var(--g)); }
+.s6 { width:calc(6*(100cqw - 11*var(--g))/12 + 5*var(--g)); }
+.s7 { width:calc(7*(100cqw - 11*var(--g))/12 + 6*var(--g)); }
+.s10 { width:calc(10*(100cqw - 11*var(--g))/12 + 9*var(--g)); }
+.s12 { width:100%; }
+
+.wempty {
+  padding:0 var(--m) 10vw calc(var(--m) + (100vw - 2*var(--m) - 11*var(--g))/12 + var(--g));
+  margin-top:-7.6vw;
+  font:400 max(12px,1vw)/1 var(--mono);
+  text-transform:uppercase;
+}
+
+.wempty[hidden] {
+  display:none;
+}
+
 @media(max-width:760px) {
   .hero {
     height:auto;
@@ -735,6 +1020,68 @@ footer h3 {
   }
   .fb {
     margin-top:10vw;
+  }
+  .wh {
+    padding-top:16vw;
+    row-gap:4vw;
+  }
+  .wh-t {
+    grid-column:1/-1;
+    font-size:8vw;
+    margin-bottom:0;
+  }
+  .ws {
+    grid-column:1/-1;
+    height:11vw;
+    padding:0 3vw;
+  }
+  .wf {
+    grid-row:3;
+    display:flex;
+    gap:2.5vw;
+  }
+  .wf[data-group=medium] {
+    grid-column:1/5;
+  }
+  .wf[data-group=category] {
+    grid-column:5/9;
+  }
+  .wf[data-group=period] {
+    grid-column:9/13;
+  }
+  .wf-l {
+    font-size:14px;
+  }
+  .wf-a {
+    width:4.5vw;
+    height:5vw;
+  }
+  .wf-ls {
+    padding-top:4vw;
+  }
+  .wf-ls button {
+    font-size:14px;
+    line-height:1.5;
+  }
+  .wchips {
+    grid-column:1/-1;
+    grid-row:4;
+    margin-top:0;
+    min-height:0;
+  }
+  .chip,.wclear {
+    height:9vw;
+    font-size:13px;
+  }
+  .wg {
+    margin-top:12vw;
+    padding-bottom:10vw;
+  }
+  .wl-l {
+    display:none;
+  }
+  .wl-r {
+    grid-column:1/-1;
   }
 }
 

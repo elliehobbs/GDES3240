@@ -1,11 +1,12 @@
 # CLAUDE.md
 
-A single-page static site for the Isamu Noguchi Foundation & Garden Museum (GDES 3240 final project). Plain HTML, CSS and JavaScript: no framework, no build step, no package manager.
+A small static site for the Isamu Noguchi Foundation & Garden Museum (GDES 3240 final project). Plain HTML, CSS and JavaScript: no framework, no build step, no package manager.
 
 ## Files
 
 - `index.html`: all page content. Also holds the inline SVG `<symbol id="ar">` arrow that each `<use href="#ar">` points to. Keep it inline so the arrows still work when the page is opened from `file://`.
 - `assets/css/styles.css`: every style. Desktop rules come first, then one `@media(max-width:760px)` block for mobile, then the reduced-motion and utility rules.
+- `works.html` + `assets/js/works.js`: the All Works page (filter menus, chips, search, slot-based image grid). It has its own script because `main.js` expects home-page elements. Its nav starts at the top with the title visible (`nav.top.stuck`).
 - `assets/js/main.js`: scroll effects, sticky-nav title, parallax, reveal animations and the exhibition gallery.
 - `assets/images/`: JPGs with descriptive kebab-case names.
 - `assets/fonts/`: Valley Sans Light (300) and Regular (400) as local TTFs. Inter Tight, IBM Plex Mono and Source Serif 4 load from Google Fonts, so they need a network connection.
@@ -35,6 +36,8 @@ Then open http://localhost:8000. Check every change at desktop width and at 760p
 - **Nav order**: nav links are positioned with `nth-child`. The `.nt` title is child 3 and only appears once `#sent` scrolls past.
 - **Footer signature**: `sg()` measures the font with a canvas to tuck `.sign` against the footer. It assumes the text is "ISAMU NOGUCHI" in Valley Sans 300.
 - **h1 offset**: `margin-left:-.093em` corrects for the side bearing of the "I" in Valley Sans. Leave it alone unless the font or text changes.
+- **Works grid**: `DESKTOP_TEMPLATE`/`MOBILE_TEMPLATE` in `works.js` list slots as [columns, P/L]. Each work fills the next open slot matching its orientation; the `.s2`–`.s12` width classes in CSS must cover every column count used. Placeholders take their shape from `data-w`/`data-h`; real `<img>`s should carry `width`/`height`.
+- **Works filters**: the option text in each `.wf-ls` must match the `data-medium`/`data-category`/`data-period` values on the figures exactly.
 
 ## Conventions
 
