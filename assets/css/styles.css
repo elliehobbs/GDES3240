@@ -2043,10 +2043,11 @@ nav.top .nt:hover {
   opacity:1;
 }
 
-/* CTA comps: nine lines, the type and arrow on the bottom line. Label positions are ratios of viewBox "5.4 3.9 73.1 90.3". */
+/* CTA comps: three curved lines, then the label split over two flat lines with the arrow between them. Two grid columns
+   wide (the hero panel's width). Label positions are ratios of viewBox "5.4 8.3 73.1 55.2". */
 .cta.wavy {
   display:block;
-  width:calc(25vw*var(--k));
+  width:calc((100vw - 2*var(--m) - 11*var(--g))/12*2 + var(--g));
 }
 
 .cta.wavy .wlw {
@@ -2055,7 +2056,7 @@ nav.top .nt:hover {
 
 .cta.wavy .ln {
   width:100%;
-  aspect-ratio:73.1/90.3;
+  aspect-ratio:73.1/55.2;
 }
 
 .cta.wavy .ln path {
@@ -2068,30 +2069,35 @@ nav.top .nt:hover {
   stroke-dashoffset:0;
 }
 
-.cta.wavy .tl {
+.cta.wavy .hl {
   position:absolute;
   left:0;
-  right:0;
-  top:90.6%;
-  transform:translateY(-100%);
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap:1.2vw;
+  top:var(--t);
+  transform:translateY(calc(-100% - .345em));
   pointer-events:none;
 }
 
 .cta.wavy .ar {
   margin:0;
-  width:calc(2.5vw*var(--k));
-  height:calc(3.4vw*var(--k));
-  min-width:calc(21px*var(--k));
-  min-height:calc(28px*var(--k));
+  width:calc(2.5vw*var(--k)*.8);
+  height:calc(3.4vw*var(--k)*.8);
+  min-width:calc(21px*var(--k)*.8);
+  min-height:calc(28px*var(--k)*.8);
+  pointer-events:none;
 }
 
-.duo .cta.wavy {
-  justify-self:end;
-  margin-right:0;
+/* "View all works": under the Noguchi-at-table photo, starting at its column, level with the bottom of the standing
+   sculpture. "See all exhibitions": level with the bottom of the Title / Location / Year row. Both also drift a little
+   with the page (see the parallax list in main.js). */
+@media(min-width:761px) {
+  .duo .cta.wavy {
+    grid-column:10/12;
+    justify-self:start;
+    margin:-7.5vw 0 0;
+  }
+  .exin>.cta.wavy {
+    top:calc(25.4vw + var(--exh) + var(--exh-gap) + 3.2vw);
+  }
 }
 
 .exin>.cta.wavy {
@@ -2119,7 +2125,19 @@ nav.top .nt:hover {
 }
 
 .hero-f .ln path {
+.cta.wavy .hl-a {
+  --t:66.5%;
+}
+
+.cta.wavy .hl-b {
+  --t:99.09%;
+}
+
   stroke-width:1;
+  position:absolute;
+  right:0;
+  top:82.97%;
+  transform:translateY(-50%);
   vector-effect:non-scaling-stroke;
   opacity:0;
   clip-path:inset(-8px 0 -8px 100%);
@@ -2171,11 +2189,15 @@ nav.top .nt:hover {
 
 @media(max-width:760px) {
   .cta.wavy {
-    width:calc(66vw*var(--k));
+    width:50vw;
+  }
+  .duo .cta.wavy {
+    justify-self:end;
+    margin-right:0;
   }
   .cta.wavy .ar {
-    width:calc(7vw*var(--k));
-    height:calc(9.5vw*var(--k));
+    width:calc(7vw*var(--k)*.8);
+    height:calc(9.5vw*var(--k)*.8);
   }
   .exin>.cta.wavy {
     margin-left:auto;

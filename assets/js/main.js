@@ -171,7 +171,7 @@ $('#exn').addEventListener('click', () => go(1));
 $('#exp').addEventListener('click', () => go(-1));
 $('#ext').textContent = String(n).padStart(2, '0');
 
-const gal=$('.gal'),duo=$('.duo'),pi=[[gal,'.w',-.05],[gal,'.a',.07],[gal,'.s',.1],[gal,'.f',-.06],[gal,'.m',-.08],[gal,'.t',.03],[duo,'.p2',.03],[duo,'.por',-.05]].map(([c,q,s])=>[c,c.querySelector(q),s]);
+const gal=$('.gal'),duo=$('.duo'),exin=$('.exin'),pi=[[gal,'.w',-.05],[gal,'.a',.07],[gal,'.s',.1],[gal,'.f',-.06],[gal,'.m',-.08],[gal,'.t',.03],[duo,'.p2',.03],[duo,'.por',-.05],[duo,'.cta',.05],[exin,'.cta',.04]].map(([c,q,s])=>[c,c.querySelector(q),s]);
 const sf=$('.sunf'),si=sf.firstElementChild;
 function par(){const sm=innerWidth<760;{const r=sf.getBoundingClientRect(),t=Math.max(0,Math.min(1,(innerHeight-r.top)/(innerHeight+r.height)));si.style.transform='translateY('+(-(12+12*t))+'%)'}pi.forEach(([c,el,s])=>{const r=c.getBoundingClientRect(),d=Math.max(-600,Math.min(600,innerHeight/2-(r.top+r.height/2)));el.style.translate=sm?'':'0 '+d*s+'px'})}
 const io2=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io2.unobserve(e.target)}}),{threshold:.12});

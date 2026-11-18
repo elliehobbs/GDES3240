@@ -1,0 +1,49 @@
+/* Experiment 01: shorter, thinner CTA comps for the home page ("View all works" and "See all exhibitions").
+   Loaded after assets/css/styles.css. The comp is two grid columns wide (the same width as the hero panel),
+   with three lines above and the type split over two lines. Positions are ratios of viewBox "5.4 8.3 73.1 55.2". */
+.cta.slim {
+  --k:.75;
+  width:calc((100vw - 2*var(--m) - 11*var(--g))/12*2 + var(--g));
+}
+
+.cta.slim .ln {
+  aspect-ratio:73.1/55.2;
+}
+
+.cta.slim .hl {
+  position:absolute;
+  left:0;
+  top:var(--t);
+  transform:translateY(calc(-100% - .345em));
+  pointer-events:none;
+}
+
+.cta.slim .hl-a {
+  --t:66.5%;
+}
+
+.cta.slim .hl-b {
+  --t:99.09%;
+}
+
+.cta.slim .ar {
+  position:absolute;
+  right:0;
+  top:82.97%;
+  transform:translateY(-50%);
+  width:calc(2.5vw*var(--k)*.8);
+  height:calc(3.4vw*var(--k)*.8);
+  min-width:calc(21px*var(--k)*.8);
+  min-height:calc(28px*var(--k)*.8);
+  pointer-events:none;
+}
+
+@media(max-width:760px) {
+  .cta.slim {
+    width:50vw;
+  }
+  .cta.slim .ar {
+    width:calc(7vw*var(--k)*.8);
+    height:calc(9.5vw*var(--k)*.8);
+  }
+}
