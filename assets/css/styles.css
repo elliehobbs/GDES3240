@@ -2010,3 +2010,186 @@ nav.top .nt:hover {
 .row-index-4 {
   --i:4;
 }
+
+/* Elastic line CTAs and the hero panel (index.html). Hand-drawn SVG lines that bow toward the cursor on hover
+   (see the "Elastic lines" block in main.js). --k scales a comp's type, arrow and width together. */
+.wavy {
+  --k:.75;
+}
+
+.wavy .ln {
+  display:block;
+  overflow:visible;
+}
+
+.wavy .ln path {
+  fill:none;
+  stroke:var(--line);
+  stroke-width:.4;
+  stroke-linecap:round;
+}
+
+.wavy .wt {
+  font:400 calc(var(--row)*.43*var(--k))/1 var(--mono);
+  text-transform:uppercase;
+  white-space:nowrap;
+  margin:0;
+  opacity:0;
+  transition:opacity .8s ease calc(var(--d,0s) + 1.3s);
+}
+
+.wavy.in .wt,
+.wavy.in .ar {
+  opacity:1;
+}
+
+/* CTA comps: nine lines, the type and arrow on the bottom line. Label positions are ratios of viewBox "5.4 3.9 73.1 90.3". */
+.cta.wavy {
+  display:block;
+  width:calc(25vw*var(--k));
+}
+
+.cta.wavy .wlw {
+  position:relative;
+}
+
+.cta.wavy .ln {
+  width:100%;
+  aspect-ratio:73.1/90.3;
+}
+
+.cta.wavy .ln path {
+  stroke-dasharray:1;
+  stroke-dashoffset:1;
+  transition:stroke-dashoffset 1.4s cubic-bezier(.65,0,.25,1) calc(var(--i)*.1s);
+}
+
+.cta.wavy.in .ln path {
+  stroke-dashoffset:0;
+}
+
+.cta.wavy .tl {
+  position:absolute;
+  left:0;
+  right:0;
+  top:90.6%;
+  transform:translateY(-100%);
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:1.2vw;
+  pointer-events:none;
+}
+
+.cta.wavy .ar {
+  margin:0;
+  width:calc(2.5vw*var(--k));
+  height:calc(3.4vw*var(--k));
+  min-width:calc(21px*var(--k));
+  min-height:calc(28px*var(--k));
+}
+
+.duo .cta.wavy {
+  justify-self:end;
+  margin-right:0;
+}
+
+.exin>.cta.wavy {
+  left:auto;
+  right:var(--m);
+}
+
+/* Hero panel: the comp sits at the top of the panel, level with the top of the video, and only runs about
+   halfway down. Strokes are a fixed 1px (non-scaling) and the lines are revealed from the right end. */
+.hero-f {
+  display:block;
+  position:relative;
+}
+
+.hero-f .wlw {
+  position:absolute;
+  top:0;
+  left:var(--m);
+  right:var(--g);
+}
+
+.hero-f .ln {
+  width:100%;
+  aspect-ratio:73.1/112.2;
+}
+
+.hero-f .ln path {
+  stroke-width:1;
+  vector-effect:non-scaling-stroke;
+  opacity:0;
+  clip-path:inset(-8px 0 -8px 100%);
+  transition:clip-path 1.1s cubic-bezier(.33,.1,.3,1) calc(var(--d,0s) + var(--i)*.03s), opacity .9s ease-out calc(var(--d,0s) + var(--i)*.03s);
+}
+
+.hero-f.in .ln path {
+  opacity:1;
+  clip-path:inset(-8px 0 -8px 0);
+}
+
+/* The type fades in once the lines are nearly done. Each label's baseline sits .47em above its line. */
+.hero-f .hl {
+  --t:0%;
+  position:absolute;
+  left:0;
+  top:var(--t);
+  transform:translateY(calc(-100% - .345em));
+  pointer-events:none;
+  transition-delay:calc(var(--d,0s) + 1.4s);
+}
+
+.hero-f .hl-1 {
+  --t:67.47%;
+}
+
+.hero-f .hl-2 {
+  --t:83.51%;
+}
+
+.hero-f .hl-3 {
+  --t:99.55%;
+}
+
+.hero-f .ar {
+  --t:91.53%;
+  position:absolute;
+  right:0;
+  top:var(--t);
+  transform:translateY(-50%);
+  margin:0;
+  width:calc(2.5vw*var(--k)*.8);
+  height:calc(3.4vw*var(--k)*.8);
+  min-width:calc(21px*var(--k)*.8);
+  min-height:calc(28px*var(--k)*.8);
+  pointer-events:none;
+  transition:opacity .8s ease calc(var(--d,0s) + 1.4s);
+}
+
+@media(max-width:760px) {
+  .cta.wavy {
+    width:calc(66vw*var(--k));
+  }
+  .cta.wavy .ar {
+    width:calc(7vw*var(--k));
+    height:calc(9.5vw*var(--k));
+  }
+  .exin>.cta.wavy {
+    margin-left:auto;
+    margin-right:var(--m);
+  }
+  .hero-f .wlw {
+    position:relative;
+    left:auto;
+    right:auto;
+    height:56vw;
+    margin-right:var(--m);
+  }
+  .hero-f .ln {
+    height:100%;
+    aspect-ratio:auto;
+  }
+}
