@@ -1647,7 +1647,7 @@ nav.top .nt:hover {
 /* Hero: a white panel over three columns, the garden video filling the rest. */
 .ch {
   display:grid;
-  grid-template-columns:calc(var(--m) + 3*((100% - 2*var(--m) - 11*var(--g))/12 + var(--g))) 1fr;
+  grid-template-columns:calc(var(--m) + 2*((100% - 2*var(--m) - 11*var(--g))/12 + var(--g))) 1fr;
   align-items:start;
 }
 
@@ -2191,5 +2191,52 @@ nav.top .nt:hover {
   .hero-f .ln {
     height:100%;
     aspect-ratio:auto;
+  }
+}
+
+/* Contact page: the same hero comp on its white panel, with the page's own text ("Like what you see?" on the
+   first line, the "Plan your visit today" link and arrow below). The panel spans the margin plus grid columns 1-2
+   (so the video starts at column 3, as on the home page), and the comp sits on the bottom edge of the video.
+   --k is a little under the home page's .75 so "Like what you see?" fits the two-column width. */
+.ch-p.hero-f {
+  --k:.7;
+  --d:.4s;
+  display:block;
+  padding:0;
+}
+
+.ch-p.hero-f .wlw {
+  top:auto;
+  bottom:0;
+}
+
+.hero-f h1 {
+  background:none;
+  color:inherit;
+  padding:0;
+  overflow:visible;
+}
+
+.ch-link {
+  display:contents;
+}
+
+.ch-link .hl,
+.ch-link .ar {
+  pointer-events:auto;
+}
+
+/* Keyboard focus only; there is no hover underline. */
+.ch-link:focus-visible .hl {
+  text-decoration:underline;
+  text-underline-offset:.2em;
+}
+
+@media(max-width:760px) {
+  .ch-p.hero-f {
+    padding:0 0 var(--m) var(--m);
+  }
+  .ch-p.hero-f .wlw {
+    right:auto;
   }
 }
