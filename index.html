@@ -5,7 +5,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400&family=IBM+Plex+Mono:wght@400&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/styles.css"></head>
 <body>
-<svg width="0" height="0" class="svg-symbols" aria-hidden="true"><symbol id="ar" viewBox="0 0 48 52" overflow="visible"><path d="M1 1 L47 26 L1 51 L13 26 Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="miter" vector-effect="non-scaling-stroke"/></symbol></svg>
+<svg width="0" height="0" class="svg-symbols" aria-hidden="true"><symbol id="ar" viewBox="0 0 42 57" overflow="visible"><path d="M0.841797 55.8281L39.8418 27.4175L0.841797 0.828125L19.0418 27.4175L0.841797 55.8281Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="miter" vector-effect="non-scaling-stroke"/></symbol></svg>
 <header class="hero">
 <h1><span>Isamu Noguchi</span></h1>
 <div class="main">
@@ -13,18 +13,18 @@
 <div class="row e row-index-0"></div><div class="row e row-index-1"></div>
 <div class="row row-index-2"><p>Explore the</p></div><div class="row row-index-3"><p>iconic Akari</p></div><div class="row row-index-4"><p>series</p></div>
 <svg class="ar"><use href="#ar"/></svg></a>
-<div class="photo"><img alt="Suspended Akari paper lanterns in a white gallery" src="assets/images/akari-gallery.jpg"></div>
+<div class="photo"><video id="hv" src="assets/video/white-cube-gallery.mp4" poster="assets/images/akari-gallery.jpg" autoplay muted loop playsinline preload="auto" aria-label="Akari paper lanterns suspended in a white gallery"></video></div>
 </div></header>
 <div id="sent"></div>
-<nav id="nav"><a href="#works">Works</a><a href="#about">About</a><b class="nt">Isamu Noguchi</b><a href="#contact">Contact</a><a href="#donate">Donate</a></nav>
+<nav id="nav"><a href="works.html">Works</a><a href="about.html">About</a><b class="nt">Isamu Noguchi</b><a href="contact.html">Contact</a><a href="#donate">Donate</a></nav>
 <section id="works">
-<div class="g quote"><span class="qm">“</span><blockquote><p><span>Everything is sculpture. Any</span><span>material, any idea without</span><span>hindrance born into space,</span><span>I consider sculpture.</span></p><cite>Isamu Noguchi</cite></blockquote></div>
+<div class="g quote"><span class="qm">“</span><blockquote><p><span>Everything is sculpture. Any</span><span>material, any idea without</span><span>hindrance born into space<span class="hp">,</span></span><span>I consider sculpture<span class="hp">.</span></span></p><cite>Isamu Noguchi</cite></blockquote></div>
 <div class="g gal" id="about">
 <img class="w" alt="Carved wood sculpture on a black base" src="assets/images/carved-wood-sculpture.jpg">
 <img class="a" alt="Folded aluminum sculpture" src="assets/images/folded-aluminum-sculpture.jpg">
 <img class="s" alt="Carved stone sculpture on a granite block" src="assets/images/carved-stone-sculpture.jpg">
 <p class="t">Isamu Noguchi (1904–1988) was a Japanese American artist and designer whose career spanned more than six decades. His work encompassed sculpture, furniture, architecture, and landscape design, earning him recognition as one of the most influential artists of the twentieth century.</p>
-<img class="f" alt="Standing abstract sculpture" src="assets/images/standing-abstract-sculpture.jpg">
+<img class="f" data-work="humpty-dumpty" tabindex="0" role="button" aria-haspopup="dialog" alt="Humpty Dumpty, 1946: standing abstract sculpture of interlocking gray slate forms" src="assets/images/standing-abstract-sculpture.jpg">
 <img class="m" alt="Isamu Noguchi working at a table, black and white photograph" src="assets/images/noguchi-at-table.jpg">
 </div>
 <div class="g duo">
@@ -35,24 +35,36 @@
 </section>
 <figure class="sun"><div class="sunf"><img alt="Aerial view of Noguchi’s sunken garden with visitors gathered at the railing" src="assets/images/sunken-garden.jpg"></div><figcaption>Sunken Garden, c. 1960</figcaption></figure>
 <section id="ex"><div class="exs"><div class="exin">
-<div class="exv"><div id="trk">
+<div class="exh"><h2>On View</h2><div class="exctl"><button type="button" id="exp" aria-label="Previous exhibition"><svg class="ar"><use href="#ar"/></svg></button><p aria-live="polite"><span id="exc">01</span> / <span id="ext">04</span></p><button type="button" id="exn" aria-label="Next exhibition"><svg class="ar"><use href="#ar"/></svg></button></div></div>
+<div class="exv" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Exhibitions — swipe or use arrow keys"><div id="trk">
 <div class="it"><img alt="Three carved stone sculptures on a low white plinth before a wall-sized photograph of a face drawn in sand" src="assets/images/landscapes-of-time.jpg" width="1280" height="853"></div>
 <div class="it"><img alt="Pale marble spiral sculpture with carved steps, Akari paper lamps glowing behind it" src="assets/images/spiral-stone-and-lamps.jpg" width="1199" height="1800"></div>
 <div class="it"><img alt="Akari paper lanterns of many shapes hung inside a lattice of timber beams" src="assets/images/akari-timber-frame.jpg" width="1350" height="1800"></div>
 <div class="it"><img alt="Black interlocking-plate sculpture on stepped plinths beneath a cloud of round Akari lanterns" src="assets/images/black-sculpture-and-lanterns.jpg" width="1800" height="1800"></div>
 </div></div>
-<div class="info" id="info"><div class="i1"><small>Title</small><b id="it">Landscapes of Time</b></div><div class="i2"><small>Location</small><b id="il">Chicago, IL</b></div><div class="i3"><small>Year</small><b id="iy">2023</b></div></div>
+<div class="info" id="info"><div class="i1"><small>Title</small><b id="it">Landscapes of Time</b></div><div class="i2"><small>Location</small><b id="il">Williamstown, MA</b></div><div class="i3"><small>Year</small><b id="iy">2025</b></div></div>
 <a class="cta lines" href="#"><div class="row row-index-0"></div><div class="row row-index-1"><p>See all exhibitions</p></div><svg class="ar"><use href="#ar"/></svg></a>
 </div></div></section>
 <div class="sign" aria-hidden="true">Isamu Noguchi</div>
 <footer id="contact">
 <h3>Foundation &amp; Garden Museum</h3>
-<div class="fl"><ul><li><a href="#">Home</a></li><li><a href="#works">Works</a></li><li><a href="#about">About</a></li><li><a href="#contact">Contact</a></li></ul>
+<div class="fl"><ul><li><a href="index.html">Home</a></li><li><a href="works.html">Works</a></li><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li></ul>
 <ul><li><a href="#">Instagram</a></li><li><a href="#">Facebook</a></li><li><a href="#">Youtube</a></li></ul>
-<ul><li><a href="#">Careers</a></li><li><a href="#">Accessibility</a></li><li><a href="#">Privacy Policy</a></li></ul>
-<ul><li><a href="#">Contact</a></li><li><a href="#">Licensing</a></li></ul></div>
+<ul><li><a href="#">Careers</a></li><li><a href="#">Accessibility</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Licensing</a></li></ul></div>
 <div class="fr" id="donate"><em>We appreciate you.</em><p>Your patronage supports the museum’s research and conservation initiatives.</p><a class="btn" href="#">Donate Today</a>
 <div class="fb"><span>Terms &amp; Conditions</span><span>© 2026</span></div></div>
 </footer>
+<dialog class="wm" id="wm-humpty-dumpty" aria-labelledby="wm-humpty-dumpty-t">
+<button class="wm-x" type="button" aria-label="Close" data-close><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M2 2L38 38M38 2L2 38" fill="none" stroke="currentColor" stroke-width="1.3" vector-effect="non-scaling-stroke"/></svg></button>
+<div class="wm-body">
+<img class="wm-img" src="assets/images/humpty-dumpty.jpg" width="538" height="718" alt="Humpty Dumpty, 1946: a tall gray slate sculpture of interlocking rounded forms on two slender legs">
+<div class="wm-info">
+<h2 class="wm-t" id="wm-humpty-dumpty-t">Humpty Dumpty</h2>
+<div class="wm-cols">
+<dl class="wm-meta"><dt>Year</dt><dd>1946</dd><dt>Dimensions</dt><dd>59 × 20 3/4 × 17 1/2 in.</dd><dt>Medium</dt><dd>Ribbon slate</dd></dl>
+<p class="wm-d">In the mid-1940s, Isamu Noguchi began producing some of his most original works, comprised of interlocking, rounded forms in materials such as wood and gray slate. Humpty Dumpty, an emblematic work from this period, was carefully constructed so that its nine parts would fit together and stay in place without glue or screws. As Noguchi explained, “everything I do has an element of engineering in it—particularly since I dislike gluing parts together or taking advantage of something that is not inherent in the material. I am leery of welding or pasting. It implies taking an unfair advantage of nature.”</p>
+</div></div></div>
+</dialog>
+<script src="assets/js/popup.js"></script>
 <script src="assets/js/main.js"></script>
 </body></html>

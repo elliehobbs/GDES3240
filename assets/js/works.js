@@ -8,25 +8,14 @@ const wg = $('#wg'), chipsEl = $('#wchips'), search = $('#ws'), empty = $('#wemp
 const works = $$('#wg .wk');
 
 /* ---------- Layout ----------
-   The composition is a repeating template of slots. Each slot has a width in
-   grid columns and an orientation (P = portrait, L = landscape). Works fill the
-   first open slot that matches their own proportions, in reading order, so the
-   gaps stay equal to the gutter no matter what aspect ratio an image has.
-   Slots left empty are dropped. A new copy of the template starts when needed. */
-const DESKTOP_TEMPLATE = {
-  // Left lane: stacked, right-aligned to the end of column 5.
-  left: [[4, 'P'], [2, 'P'], [3, 'P'], [2, 'P'], [4, 'L'], [2, 'P']],
-  // Right lane: rows starting at column 6.
-  right: [[[3, 'P'], [3, 'L']], [[4, 'P'], [2, 'P']], [[3, 'P'], [3, 'L']], [[5, 'L']]],
-  // Fill order, top to bottom across both lanes: [lane, index, slotInRow]
-  order: [['left', 0], ['right', 0, 0], ['right', 0, 1], ['right', 1, 0], ['right', 1, 1],
-          ['left', 1], ['left', 2], ['right', 2, 0], ['right', 2, 1], ['left', 3],
-          ['right', 3, 0], ['left', 4], ['left', 5]]
-};
-const MOBILE_TEMPLATE = {
-  left: [],
-  right: [[[6, 'P'], [6, 'P']], [[12, 'L']], [[7, 'P'], [5, 'P']], [[10, 'L']]],
-  order: [['right', 0, 0], ['right', 0, 1], ['right', 1, 0], ['right', 2, 0], ['right', 2, 1], ['right', 3, 0]]
+   A masonry on the 10 inner columns of the 12-column grid (columns 2–11; mobile uses all 12). Works start on `step` column boundaries and
+   take one of the widths listed for their orientation (P = portrait, L =
+   landscape). The listed order is the preferred rhythm; a work only departs from
+   it when another width fills a low spot better, so no column is left behind.
+   Every vertical and horizontal gap equals the gutter. */
+const SPANS = {
+  desktop: { cols: 10, step: 2, P: [4, 2, 4, 4, 2, 4], L: [6, 4, 6] },
+  mobile: { cols: 12, step: 6, P: [6], L: [12] }
 };
 
 function ratio(fig) {
@@ -47,53 +36,49 @@ works.forEach(fig => {
   if (img && !img.complete) img.addEventListener('load', () => layout(), { once: true });
 });
 
-let lastMode = null;
+let lastWidth = 0;
 function layout() {
   const visible = works.filter(fig => !fig.hidden);
-  const tpl = innerWidth <= MOBILE ? MOBILE_TEMPLATE : DESKTOP_TEMPLATE;
-  lastMode = tpl;
-  const copies = [];
-  const newCopy = () => {
-    const copy = {
-      left: tpl.left.map(s => ({ span: s[0], o: s[1], fig: null })),
-      right: tpl.right.map(row => row.map(s => ({ span: s[0], o: s[1], fig: null })))
-    };
-    copy.seq = tpl.order.map(([lane, i, j]) => lane === 'left' ? copy.left[i] : copy.right[i][j]);
-    copies.push(copy);
-    return copy;
-  };
-  newCopy();
+  const cfg = innerWidth <= MOBILE ? SPANS.mobile : SPANS.desktop;
+  const field = document.createElement('div');
+  field.className = 'wl';
+  wg.replaceChildren(field);
+  const W = field.clientWidth, g = parseFloat(getComputedStyle(field).columnGap) || 0;
+  lastWidth = innerWidth;
+  const colW = (W - (cfg.cols - 1) * g) / cfg.cols;
+  const heights = new Array(cfg.cols).fill(0); // bottom edge of each column
+  const used = { P: 0, L: 0 };
+  const GAP_WEIGHT = 2, OFF_RHYTHM = W * 0.12; // how strongly to avoid holes / leaving the preferred width
+
   visible.forEach(fig => {
     const o = ratio(fig) >= 1 ? 'L' : 'P';
-    let slot = null;
-    for (const copy of copies) { slot = copy.seq.find(s => !s.fig && s.o === o); if (slot) break; }
-    if (!slot) slot = newCopy().seq.find(s => s.o === o);
-    slot.fig = fig;
-  });
-
-  const laneL = document.createElement('div'), laneR = document.createElement('div');
-  laneL.className = 'wl-l';
-  laneR.className = 'wl-r';
-  const place = slot => {
-    slot.fig.className = 'wk rv s' + slot.span + (slot.fig.classList.contains('in') ? ' in' : '');
-    return slot.fig;
-  };
-  copies.forEach(copy => {
-    copy.left.filter(s => s.fig).forEach(s => laneL.append(place(s)));
-    copy.right.forEach(row => {
-      const filled = row.filter(s => s.fig);
-      if (!filled.length) return;
-      const r = document.createElement('div');
-      r.className = 'wr';
-      filled.forEach(s => r.append(place(s)));
-      laneR.append(r);
+    const preferred = cfg[o][used[o]++ % cfg[o].length];
+    // Score every width and start column: lowest top edge, with a penalty for
+    // the empty space left beneath the work and for leaving the preferred width.
+    let best = null;
+    [...new Set(cfg[o])].forEach(sp => {
+      const w = sp * colW + (sp - 1) * g, h = w / ratio(fig);
+      for (let c = 0; c + sp <= cfg.cols; c += cfg.step) {
+        const run = heights.slice(c, c + sp), top = Math.max(...run);
+        const gap = top - run.reduce((n, v) => n + v, 0) / sp;
+        const score = top + GAP_WEIGHT * gap + (sp === preferred ? 0 : OFF_RHYTHM);
+        if (!best || score < best.score - 0.5) best = { score, span: sp, c, top, h };
+      }
     });
+    const { span, c: bestc, top: bestTop, h } = best;
+    fig.className = 'wk rv s' + span + (fig.classList.contains('in') ? ' in' : '');
+    fig.style.left = bestc * (colW + g) + 'px';
+    fig.style.top = bestTop + 'px';
+    for (let c = bestc; c < bestc + span; c++) heights[c] = bestTop + h + g;
+    field.append(fig);
   });
+  field.style.height = Math.max(0, Math.max(...heights) - g) + 'px';
+
   // Hidden works stay in the DOM so they can come back.
   const parked = document.createElement('div');
   parked.hidden = true;
   works.filter(fig => fig.hidden).forEach(fig => parked.append(fig));
-  wg.replaceChildren(laneL, laneR, parked);
+  wg.append(parked);
   wg.classList.add('laid');
   empty.hidden = visible.length > 0;
   works.forEach(fig => { if (!fig.classList.contains('in')) reveal.observe(fig); });
@@ -138,7 +123,14 @@ function renderChips() {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'chip';
-    b.textContent = value;
+    const label = document.createElement('span');
+    label.className = 'chip-l';
+    label.textContent = value;
+    const x = document.createElement('span');
+    x.className = 'chip-x';
+    x.setAttribute('aria-hidden', 'true');
+    x.textContent = '\u00d7';
+    b.append(label, x);
     b.setAttribute('aria-label', 'Remove filter: ' + value);
     b.addEventListener('click', () => toggle(group, value));
     return b;
@@ -178,22 +170,25 @@ function toggle(group, value) {
 search.addEventListener('input', applyFilters);
 
 /* ---------- Menus ----------
-   Hovering the arrow opens a menu; leaving the menu closes it. Tapping or
-   pressing the arrow toggles it on touch screens and keyboards. */
+   Hovering the arrow or the filter title opens a menu; leaving the menu closes
+   it. Tapping either, or pressing the arrow, toggles it on touch screens and keyboards. */
 const menus = $$('.wf');
 function setOpen(menu, open) {
   menu.classList.toggle('open', open);
   menu.querySelector('.wf-b').setAttribute('aria-expanded', open);
 }
 menus.forEach(menu => {
-  const btn = menu.querySelector('.wf-b');
-  btn.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') setOpen(menu, true); });
-  menu.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') setOpen(menu, false); });
-  btn.addEventListener('click', () => {
-    const open = canHover.matches && menu.matches(':hover') ? true : !menu.classList.contains('open');
-    menus.forEach(m => m !== menu && setOpen(m, false));
-    setOpen(menu, open);
+  const btn = menu.querySelector('.wf-b'), label = menu.querySelector('.wf-l');
+  // The arrow and the filter title both open the menu.
+  [btn, label].forEach(el => {
+    el.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') setOpen(menu, true); });
+    el.addEventListener('click', () => {
+      const open = canHover.matches && menu.matches(':hover') ? true : !menu.classList.contains('open');
+      menus.forEach(m => m !== menu && setOpen(m, false));
+      setOpen(menu, open);
+    });
   });
+  menu.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') setOpen(menu, false); });
   menu.addEventListener('focusout', e => { if (!menu.contains(e.relatedTarget)) setOpen(menu, false); });
   menu.addEventListener('keydown', e => {
     if (e.key === 'Escape') { setOpen(menu, false); btn.focus(); }
@@ -208,9 +203,11 @@ document.addEventListener('click', e => {
 });
 
 /* ---------- Resize + footer ---------- */
+let resizeFrame;
 addEventListener('resize', () => {
-  const tpl = innerWidth <= MOBILE ? MOBILE_TEMPLATE : DESKTOP_TEMPLATE;
-  if (tpl !== lastMode) layout();
+  if (innerWidth === lastWidth) return;
+  cancelAnimationFrame(resizeFrame);
+  resizeFrame = requestAnimationFrame(layout);
 });
 layout();
 

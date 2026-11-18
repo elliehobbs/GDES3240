@@ -1,0 +1,207 @@
+/* Experiment 01: Variant F on the home page. Loaded after assets/css/styles.css. */
+
+/* ---- VARIANT A: organic lines (hand-drawn paths from lines.svg, rippled by script.js) ---- */
+.wavy .wl {
+  display:block;
+  width:100%;
+  aspect-ratio:80/76;
+  overflow:visible;
+}
+
+.wavy .wl path {
+  fill:none;
+  stroke:var(--line);
+  stroke-width:.4;
+  stroke-linecap:round;
+  stroke-dasharray:1;
+  stroke-dashoffset:1;
+  transition:stroke-dashoffset 1.4s cubic-bezier(.65,0,.25,1) calc(var(--i)*.1s);
+}
+
+.wavy.in .wl path {
+  stroke-dashoffset:0;
+}
+
+.wavy .wt {
+  font:400 calc(var(--row)*.43)/1 var(--mono);
+  text-transform:uppercase;
+  white-space:nowrap;
+  margin-top:.6vw;
+  opacity:0;
+  transition:opacity .8s ease 1.3s;
+}
+
+.wavy.in .wt,
+.wavy.in .ar {
+  opacity:1;
+}
+
+/* ---- VARIANT C: type sits on the 5th line. Lines 5 and 6 are nudged down 4 units in the markup
+   (data-dy + transform) so the type clears line 4. Positions below are viewBox "2 12 80 80" ratios. ---- */
+.typed .wlw {
+  position:relative;
+}
+
+.typed .wl {
+  aspect-ratio:1;
+}
+
+.typed .wt.on-line {
+  position:absolute;
+  left:3.5%;
+  top:73.5%;
+  margin:0;
+  transform:translateY(-100%);
+  pointer-events:none;
+}
+
+/* ---- VARIANT D: lines_v2.svg (9 lines), type on the 9th (bottom) line. Positions are ratios of viewBox "5.4 3.9 73.1 90.3". ---- */
+.typed-v2 .wl {
+  aspect-ratio:73.1/90.3;
+}
+
+.typed-v2 .wt.on-line {
+  left:0;
+  top:90.6%;
+}
+
+/* ---- VARIANT F: arrow pinned to the right end of line 9, type at the left, instead of below the comp. ---- */
+.typed-arrow .tl {
+  position:absolute;
+  left:0;
+  right:0;
+  top:90.6%;
+  transform:translateY(-100%);
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:1.2vw;
+  pointer-events:none;
+}
+
+.typed-arrow .tl .wt,
+.typed-arrow .tl .ar {
+  margin:0;
+}
+
+
+/* ---- Home page placement for Variant F ----
+   The original CTAs fill grid columns 10-12 plus the right margin. Variant F is much taller at that
+   width, so here it is held to a narrower width and pinned to the right edge. */
+/* --k scales the whole comp (width, type, arrow) together. 1 = the previous size. */
+.cta.wavy {
+  --k:.75;
+  width:calc(25vw*var(--k));   /* one width for both CTAs (sized for the longer "See all exhibitions" label) */
+}
+
+.cta.wavy .wt {
+  font-size:calc(var(--row)*.43*var(--k));
+}
+
+.cta.wavy .ar {
+  width:calc(2.5vw*var(--k));
+  height:calc(3.4vw*var(--k));
+  min-width:calc(21px*var(--k));
+  min-height:calc(28px*var(--k));
+}
+
+.duo .cta.wavy {
+  justify-self:end;
+  margin-right:0;   /* ends on the page margin, like the nav, instead of bleeding off the edge */
+}
+
+.exin>.cta.wavy {
+  left:auto;
+  right:var(--m);
+}
+
+@media(max-width:760px) {
+  .cta.wavy {
+    width:calc(66vw*var(--k));
+  }
+  .cta.wavy .ar {
+    width:calc(7vw*var(--k));
+    height:calc(9.5vw*var(--k));
+  }
+  .exin>.cta.wavy {
+    margin-left:auto;
+    margin-right:var(--m);
+  }
+}
+
+
+/* ---- Hero panel in the Variant F style ----
+   Dense hand-drawn bundle on top, then three widely spaced lines that carry the type. The comp is
+   stretched to the panel height (preserveAspectRatio none + non-scaling strokes), so it fills the
+   panel at any window shape. Reveal is a left-to-right wipe because dash-drawing doesn't work with
+   non-scaling strokes. --t positions each label (percent of the panel height). */
+.hero-f {
+  display:block;
+  position:relative;
+  color:#fff;
+}
+
+/* Absolutely fill the panel so the comp never sets the hero's height. */
+.hero-f .wlw {
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:var(--m);
+  right:var(--g);
+}
+
+.hero-f .wl {
+  display:block;
+  width:100%;
+  height:100%;
+  aspect-ratio:auto;
+  overflow:visible;
+  clip-path:inset(-5% 100% -5% 0);
+  transition:clip-path 1.6s cubic-bezier(.65,0,.25,1) var(--d,0s);
+}
+
+.hero-f.in .wl {
+  clip-path:inset(-5% -5% -5% -5%);
+}
+
+.hero-f .wl path {
+  stroke-width:1;
+  stroke-dasharray:none;
+  stroke-dashoffset:0;
+  vector-effect:non-scaling-stroke;
+  transition:none;
+}
+
+.hero-f .hl {
+  position:absolute;
+  left:0;
+  top:calc(var(--t) - .45vw);
+  transform:translateY(-100%);
+  margin:0;
+  pointer-events:none;
+}
+
+.hero-f .tl.hl {
+  right:0;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+}
+
+.hero-f .tl .wt,
+.hero-f .tl .ar {
+  margin:0;
+}
+
+@media(max-width:760px) {
+  .hero-f .wlw {
+    position:relative;
+    left:auto;
+    right:auto;
+    height:84vw;
+    margin-right:var(--m);
+  }
+  .hero-f .hl {
+    top:calc(var(--t) - 1.2vw);
+  }
+}

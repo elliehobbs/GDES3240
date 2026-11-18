@@ -1,21 +1,34 @@
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 /* Edit exhibition details here: [title, location, year] — one per image, in order */
-const EX=[['Landscapes of Time','Chicago, IL','2023'],['Exhibition title','Location','Year'],['Exhibition title','Location','Year'],['Exhibition title','Location','Year']];
+const EX=[['Landscapes of Time','Williamstown, MA','2025'],['Isamu Noguchi: I am not a designer','Atlanta, GA','2026'],['In Situ','Hong Kong','2024'],['Isamu Noguchi: A New Nature','London','2022']];
 const sn=$('#sent'),nv=$('#nav');function stk(){nv.classList.toggle('stuck',sn.getBoundingClientRect().top<-.5)}stk();
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.5});
 $$('.lines').forEach(l=>io.observe(l));
-const sec = $('#ex'), trk = $('#trk'), its = [...trk.children];
-const n = its.length, inf = $('#info');
-let cur = 0, progress = null, frame = 0, lastTime = 0, infoTimer;
-let dimensions;
-let snappedPhoto = null;
-// Cross 60% of a step to leave a detent; reverse below 40% to return.
-const DETENT_THRESHOLD = .6;
+const view = $('.exv'), trk = $('#trk');
+const src = [...trk.children], n = src.length, inf = $('#info');
+// Three copies of the set give the loop enough cards to fill both sides.
+const POOL = 3 * n;
+for (let copy = 1; copy < 3; copy++) src.forEach(item => {
+  const clone = item.cloneNode(true);
+  clone.setAttribute('aria-hidden', 'true');
+  clone.querySelector('img').alt = '';
+  trk.appendChild(clone);
+});
+const its = [...trk.children];
+// Each slot holds one card; slots run from -LEFT to POOL-LEFT-1 around the active card.
+const LEFT = 2;
+let cur = 0, target = 0, progress = 0, frame = 0, lastTime = 0, infoTimer;
+let dimensions, drag = null, wheelSum = 0, wheelLock = 0;
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+// Hero video: hold on the first frame for reduced-motion users.
+const heroVideo = $('#hv');
+if (heroVideo && reducedMotion.matches) { heroVideo.removeAttribute('autoplay'); heroVideo.pause(); }
+const mod = (a, b) => ((a % b) + b) % b;
 
 function setI(index) {
   cur = index;
   clearTimeout(infoTimer);
+  $('#exc').textContent = String(index + 1).padStart(2, '0');
   const showCaption = () => {
     ['it', 'il', 'iy'].forEach((id, column) => {
       $('#' + id).textContent = EX[index][column];
@@ -40,49 +53,123 @@ function measureExhibition() {
   const large = small ? width - 2 * margin : 6 * column + 5 * gap;
   const thumb = small ? .4 * width : 2 * column + gap;
   dimensions = {
-    gap, large, thumb,
+    margin, gap, large, thumb,
     largeHeight: large / 1.42,
     thumbHeight: thumb * 1.35,
-    distance: Math.max(1, sec.offsetHeight - innerHeight)
+    // Dragging this far moves one card.
+    step: (large + thumb) / 2 + gap
   };
-  trk.parentNode.style.height = dimensions.largeHeight + 'px';
+  view.style.height = dimensions.largeHeight + 'px';
 }
 
-function lay(time, sectionTop) {
-  const { gap, large, thumb, largeHeight, thumbHeight, distance } = dimensions;
-  const raw = Math.min(n - 1, Math.max(0, -sectionTop / distance * (n - 1)));
-  if (snappedPhoto === null) snappedPhoto = Math.round(raw);
-  // Separate forward/backward thresholds prevent jitter near the midpoint.
-  // Loops also handle fast scrolling or jumping several photos at once.
-  while (snappedPhoto < n - 1 && raw >= snappedPhoto + DETENT_THRESHOLD) snappedPhoto++;
-  while (snappedPhoto > 0 && raw <= snappedPhoto - DETENT_THRESHOLD) snappedPhoto--;
-  const target = snappedPhoto;
+// Move the carousel by whole cards; the loop has no ends.
+function go(delta) {
+  target = Math.round(target) + delta;
+  requestUpdate();
+}
+
+function lay(time) {
+  const { margin, gap, large, thumb, largeHeight, thumbHeight } = dimensions;
   const elapsed = lastTime ? Math.min(64, time - lastTime) : 16;
   lastTime = time;
-  if (progress === null || reducedMotion.matches) progress = target;
+  if (drag || reducedMotion.matches) progress = target;
   else progress += (target - progress) * (1 - Math.exp(-elapsed / 140));
-  const moving = Math.abs(target - progress) > .0001;
-  if (!moving) progress = target;
+  const moving = !drag && Math.abs(target - progress) > .0001;
+  if (!moving && !drag) progress = target;
 
-  const index = Math.min(n - 2, Math.floor(progress));
-  const fraction = progress - index;
-  const widths = its.map((_, i) => {
-    const active = Math.max(0, 1 - Math.abs(progress - i));
-    return { width: thumb + active * (large - thumb),
+  const base = Math.floor(progress), fraction = progress - base;
+  const size = slot => {
+    const active = Math.max(0, 1 - Math.abs(slot - fraction));
+    return { active, width: thumb + active * (large - thumb),
              height: thumbHeight + active * (largeHeight - thumbHeight) };
-  });
-  // Follow the actual left edge, including every preceding photo and gap.
-  const offset = widths.slice(0, index).reduce((sum, item) => sum + item.width + gap, 0)
-    + fraction * (widths[index].width + gap);
-  its.forEach((item, i) => {
-    item.style.width = widths[i].width + 'px';
-    item.style.height = widths[i].height + 'px';
-  });
-  trk.style.transform = `translate3d(${-offset}px, 0, 0)`;
-  // Start fading as soon as a new photo detent is selected.
-  if (target !== cur) setI(target);
+  };
+  // Lay slots outward from the card at `base`, following each real width.
+  const lefts = {}, sizes = {};
+  for (let slot = -LEFT; slot < POOL - LEFT; slot++) sizes[slot] = size(slot);
+  lefts[0] = margin - fraction * (sizes[0].width + gap);
+  for (let slot = 1; slot < POOL - LEFT; slot++) lefts[slot] = lefts[slot - 1] + sizes[slot - 1].width + gap;
+  for (let slot = -1; slot >= -LEFT; slot--) lefts[slot] = lefts[slot + 1] - sizes[slot].width - gap;
+  for (let slot = -LEFT; slot < POOL - LEFT; slot++) {
+    const item = its[mod(base + slot, POOL)], { active, width, height } = sizes[slot];
+    item.style.width = width + 'px';
+    item.style.height = height + 'px';
+    item.style.transform = `translate3d(${lefts[slot]}px, 0, 0)`;
+    // Thumbnails sit slightly zoomed and dimmed, then settle as they grow.
+    item.style.setProperty('--a', active.toFixed(4));
+    item.classList.toggle('on', slot - fraction === 0);
+  }
+  const index = mod(Math.round(drag ? progress : target), n);
+  if (index !== cur) setI(index);
   return moving;
 }
+
+// Pointer drag: follows the finger, then snaps with a little flick bias.
+view.addEventListener('pointerdown', e => {
+  if (e.button !== 0) return;
+  drag = { x: e.clientX, y: e.clientY, start: progress, last: e.clientX, time: e.timeStamp, v: 0, moved: false, id: e.pointerId };
+  target = progress;
+});
+view.addEventListener('pointermove', e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  const dx = e.clientX - drag.x;
+  if (!drag.moved) {
+    // Let vertical swipes keep scrolling the page.
+    if (Math.abs(e.clientY - drag.y) > Math.abs(dx) && Math.abs(e.clientY - drag.y) > 6) { drag = null; go(0); return; }
+    if (Math.abs(dx) < 6) return;
+    drag.moved = true;
+    try { view.setPointerCapture(e.pointerId); } catch (err) {}
+    view.classList.add('dragging');
+  }
+  const dt = Math.max(1, e.timeStamp - drag.time);
+  drag.v = (e.clientX - drag.last) / dt;
+  drag.last = e.clientX; drag.time = e.timeStamp;
+  target = drag.start - dx / dimensions.step;
+  requestUpdate();
+});
+function endDrag(e) {
+  if (!drag || (e && e.pointerId !== drag.id)) return;
+  const { moved, start, v } = drag;
+  drag = null;
+  view.classList.remove('dragging');
+  if (!moved) {
+    // A tap on a neighbouring card brings it forward.
+    const hit = e && e.target.closest && e.target.closest('.it');
+    if (hit && !hit.classList.contains('on')) {
+      const slot = its.indexOf(hit), here = mod(Math.round(progress), POOL);
+      let delta = mod(slot - here, POOL);
+      if (delta > POOL / 2) delta -= POOL;
+      go(delta);
+    } else go(0);
+    return;
+  }
+  // A quick flick advances even if the drag was short.
+  let next = Math.round(target);
+  if (next === Math.round(start) && (Math.abs(target - start) > .12 || Math.abs(v) > .3)) next += target > start ? 1 : -1;
+  target = next;
+  requestUpdate();
+}
+view.addEventListener('pointerup', endDrag);
+view.addEventListener('pointercancel', endDrag);
+view.addEventListener('dragstart', e => e.preventDefault());
+// Trackpad side swipes: one card per gesture.
+view.addEventListener('wheel', e => {
+  if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+  e.preventDefault();
+  if (e.timeStamp < wheelLock) return;
+  wheelSum += e.deltaX;
+  if (Math.abs(wheelSum) > 40) {
+    go(Math.sign(wheelSum));
+    wheelSum = 0;
+    wheelLock = e.timeStamp + 450;
+  }
+}, { passive: false });
+view.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+});
+$('#exn').addEventListener('click', () => go(1));
+$('#exp').addEventListener('click', () => go(-1));
+$('#ext').textContent = String(n).padStart(2, '0');
 
 const gal=$('.gal'),duo=$('.duo'),pi=[[gal,'.w',-.05],[gal,'.a',.07],[gal,'.s',.1],[gal,'.f',-.06],[gal,'.m',-.08],[gal,'.t',.03],[duo,'.p2',.03],[duo,'.por',-.05]].map(([c,q,s])=>[c,c.querySelector(q),s]);
 const sf=$('.sunf'),si=sf.firstElementChild;
@@ -96,11 +183,10 @@ function requestUpdate() {
 }
 function update(time) {
   frame = 0;
-  const sectionTop = sec.getBoundingClientRect().top;
   // Read surrounding page geometry before changing exhibition dimensions.
   par();
   stk();
-  if (lay(time, sectionTop)) requestUpdate();
+  if (lay(time)) requestUpdate();
   else lastTime = 0;
 }
 addEventListener('scroll', requestUpdate, { passive: true });
