@@ -1638,7 +1638,7 @@ nav.top .nt:hover {
 .ab-p8 {
   grid-column:10/13;
   margin-top:60.7vw;
-  aspect-ratio:368/282;
+  aspect-ratio:1154/872;
 }
 
 /* Second quote: left-aligned, with the closing mark in the next column. */
@@ -2383,5 +2383,23 @@ nav.top .nt:hover {
   .ds-p {
     grid-column:1/-1;
     font-size:max(15px,4.2vw);
+  }
+}
+
+/* Exhibitions page filters: continent, and the year sort (its labels are longer, so it takes three columns). */
+.wf[data-group=continent] {
+  grid-column:6/8;
+}
+
+.wf[data-group=year] {
+  grid-column:8/11;
+}
+
+@media(max-width:760px) {
+  .wf[data-group=continent] {
+    grid-column:1/7;
+  }
+  .wf[data-group=year] {
+    grid-column:7/13;
   }
 }

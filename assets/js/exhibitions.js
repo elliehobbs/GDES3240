@@ -1,4 +1,4 @@
-// Exhibitions page: masonry layout, filter menus, chips and search.
+// Exhibitions page: masonry layout, continent filter, year sort, chips and search.
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const canHover = matchMedia('(hover: hover)');
@@ -38,7 +38,7 @@ works.forEach(fig => {
 
 let lastWidth = 0;
 function layout() {
-  const visible = works.filter(fig => !fig.hidden);
+  const visible = sorted().filter(fig => !fig.hidden);
   const cfg = innerWidth <= MOBILE ? SPANS.mobile : SPANS.desktop;
   const field = document.createElement('div');
   field.className = 'wl';
@@ -96,12 +96,26 @@ works.forEach(fig => fig.classList.add('rv'));
 const selected = []; // [{ group, value }] in the order they were picked
 let fadeTimer;
 
+// "Year" is a sort, not a filter: one choice at a time, oldest-to-newest or the reverse.
+// Exhibitions with no year yet always go last.
+function sorted() {
+  const pick = selected.find(s => s.group === 'year');
+  if (!pick) return works;
+  const dir = pick.value === 'Oldest to newest' ? 1 : -1;
+  const year = fig => parseInt(fig.dataset.year, 10);
+  return works.slice().sort((a, b) => {
+    const ya = year(a), yb = year(b);
+    if (isNaN(ya) || isNaN(yb)) return isNaN(ya) - isNaN(yb); // blank years last, original order kept
+    return (ya - yb) * dir;
+  });
+}
+
 function matches(fig) {
   const q = search.value.trim().toLowerCase();
   const d = fig.dataset;
-  if (q && ![d.title, d.location, d.medium, d.category, d.period].join(' ').toLowerCase().includes(q)) return false;
+  if (q && ![d.title, d.location, d.continent, d.year].join(' ').toLowerCase().includes(q)) return false;
   // OR within a group, AND across groups.
-  for (const group of ['medium', 'category', 'period']) {
+  for (const group of ['continent']) {
     const picks = selected.filter(s => s.group === group).map(s => s.value);
     if (picks.length && !picks.includes(d[group])) return false;
   }
@@ -128,13 +142,14 @@ function renderChips() {
     b.className = 'chip';
     const label = document.createElement('span');
     label.className = 'chip-l';
-    label.textContent = value;
+    const text = group === 'year' ? 'Year: ' + value : value;
+    label.textContent = text;
     const x = document.createElement('span');
     x.className = 'chip-x';
     x.setAttribute('aria-hidden', 'true');
     x.textContent = '\u00d7';
     b.append(label, x);
-    b.setAttribute('aria-label', 'Remove filter: ' + value);
+    b.setAttribute('aria-label', 'Remove ' + (group === 'year' ? 'sort' : 'filter') + ': ' + text);
     b.addEventListener('click', () => toggle(group, value));
     return b;
   }));
@@ -166,7 +181,11 @@ function sync() {
 
 function toggle(group, value) {
   const i = selected.findIndex(s => s.group === group && s.value === value);
-  if (i > -1) selected.splice(i, 1); else selected.push({ group, value });
+  if (i > -1) selected.splice(i, 1);
+  else {
+    if (group === 'year') for (let j = selected.length - 1; j >= 0; j--) if (selected[j].group === 'year') selected.splice(j, 1);
+    selected.push({ group, value });
+  }
   sync();
 }
 
