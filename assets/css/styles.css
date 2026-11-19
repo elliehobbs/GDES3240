@@ -2403,3 +2403,12 @@ nav.top .nt:hover {
     grid-column:7/13;
   }
 }
+
+/* Works and exhibitions: the image drifts a few pixels toward the cursor (assets/js/hover-shift.js sets
+   --mx/--my from -1 to 1 as the mouse moves over it). */
+@media(hover:hover) {
+  .wk img {
+    transform:translate(calc(var(--mx,0)*4px),calc(var(--my,0)*4px));
+    transition:transform .45s cubic-bezier(.2,.7,.3,1);
+  }
+}
