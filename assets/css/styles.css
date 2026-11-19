@@ -2412,3 +2412,33 @@ nav.top .nt:hover {
     transition:transform .45s cubic-bezier(.2,.7,.3,1);
   }
 }
+
+/* Donate page: the "Your Donation Matters" block sits 15px lower than the contact page's equivalent. */
+.cs.ds {
+  margin-top:calc(9vw + 15px);
+}
+
+@media(max-width:760px) {
+  .cs.ds {
+    margin-top:calc(14vw + 15px);
+  }
+}
+
+/* Donate page: the paragraph sits a third closer to its heading (row gap 5.5vw -> 3.7vw; 9vw -> 6vw on mobile). */
+.cs.ds {
+  row-gap:3.7vw;
+}
+
+@media(max-width:760px) {
+  .cs.ds {
+    row-gap:6vw;
+  }
+}
+
+/* Contact and Donate (desktop): the heading and its content start closer to the hero caption (margin 9vw -> 2.3vw). */
+@media(min-width:761px) {
+  .cs,
+  .cs.ds {
+    margin-top:2.3vw;
+  }
+}
