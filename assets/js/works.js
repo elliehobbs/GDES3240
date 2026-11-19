@@ -209,6 +209,26 @@ addEventListener('resize', () => {
   cancelAnimationFrame(resizeFrame);
   resizeFrame = requestAnimationFrame(layout);
 });
+
+/* ---------- Preselected filters ----------
+   Links such as works.html?medium=Paper open the page with that filter already on.
+   Values must match the option text in the menus (case-insensitive). */
+['medium', 'category', 'period'].forEach(group => {
+  new URLSearchParams(location.search).getAll(group).forEach(raw => {
+    const opt = $$('#wl-' + group + ' button').find(b => b.textContent.toLowerCase() === raw.trim().toLowerCase());
+    if (opt && !selected.some(s => s.group === group && s.value === opt.textContent)) selected.push({ group, value: opt.textContent });
+  });
+});
+if (selected.length) {
+  // Filter before the first layout so the grid never flashes unfiltered.
+  works.forEach(fig => { fig.hidden = !matches(fig); });
+  $$('.wf').forEach(menu => menu.querySelectorAll('.wf-ls button').forEach(btn => {
+    const on = selected.some(s => s.group === menu.dataset.group && s.value === btn.textContent);
+    btn.classList.toggle('on', on);
+    btn.setAttribute('aria-pressed', on);
+  }));
+  renderChips();
+}
 layout();
 
 // Same as main.js: tuck the footer signature against the footer.
