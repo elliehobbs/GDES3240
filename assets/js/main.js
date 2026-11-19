@@ -1,12 +1,11 @@
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 /* Edit exhibition details here: [title, location, year] — one per image, in order */
-const EX=[['Landscapes of Time','Williamstown, MA','2025'],['Isamu Noguchi: I am not a designer','Atlanta, GA','2026'],['In Situ','Hong Kong','2024'],['Isamu Noguchi: A New Nature','London','2022']];
+const EX=[['Landscapes of Time','Williamstown, MA','2025'],['Isamu Noguchi: I am not a designer','Atlanta, GA','2026'],['In Situ','Hong Kong','2024'],['Isamu Noguchi: A New Nature','London','2022'],['No Ordinary Light: Akari at 75','Long Island, NY','2026']];
 const sn=$('#sent'),nv=$('#nav');function stk(){nv.classList.toggle('stuck',sn.getBoundingClientRect().top<-.5)}stk();
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.5});
 $$('.lines,.wavy').forEach(l=>io.observe(l));
 const view = $('.exv'), trk = $('#trk');
-const src = [...trk.children], n = src.length, inf = $('#info');
-// Three copies of the set give the loop enough cards to fill both sides.
+const src = [...trk.children], n = src.length, inf = $('#info');// Three copies of the set give the loop enough cards to fill both sides.
 const POOL = 3 * n;
 for (let copy = 1; copy < 3; copy++) src.forEach(item => {
   const clone = item.cloneNode(true);
@@ -175,7 +174,7 @@ const gal=$('.gal'),duo=$('.duo'),exin=$('.exin'),pi=[[gal,'.w',-.05],[gal,'.a',
 const sf=$('.sunf'),si=sf.firstElementChild;
 function par(){const sm=innerWidth<760;{const r=sf.getBoundingClientRect(),t=Math.max(0,Math.min(1,(innerHeight-r.top)/(innerHeight+r.height)));si.style.transform='translateY('+(-(12+12*t))+'%)'}pi.forEach(([c,el,s])=>{const r=c.getBoundingClientRect(),d=Math.max(-600,Math.min(600,innerHeight/2-(r.top+r.height/2)));el.style.translate=sm?'':'0 '+d*s+'px'})}
 const io2=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io2.unobserve(e.target)}}),{threshold:.12});
-$$('.gal>img,.gal>.t,.por,.p2').forEach(el=>{el.classList.add('rv');io2.observe(el)});
+$$('.gal>img,.gal>.hv,.gal>.t,.por,.p2').forEach(el=>{el.classList.add('rv');io2.observe(el)});
 $$('.qm,blockquote').forEach((el,i)=>{el.classList.add('qf');el.style.transitionDelay=i*.2+'s';io2.observe(el)});
 // Scroll events only request work; one frame drives all scroll effects.
 function requestUpdate() {

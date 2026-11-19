@@ -39,6 +39,7 @@ function parallax() {
   const heroTop = hero.getBoundingClientRect().top;
   const bleedRects = bleeds.map(([frame]) => frame.getBoundingClientRect());
   const sectionRects = drifting.map(([section]) => section.getBoundingClientRect());
+  const photoRects = drifting.map(([, el]) => el.getBoundingClientRect());
 
   // The hero photo moves at a third of the scroll speed.
   heroMedia.style.transform = still ? '' : `translate3d(0, ${Math.max(0, -heroTop) * .33}px, 0)`;
@@ -48,11 +49,39 @@ function parallax() {
     const t = still ? .5 : Math.max(0, Math.min(1, (h - r.top) / (h + r.height)));
     media.style.transform = `translateY(${-(12 + 12 * t)}%)`;
   });
-  drifting.forEach(([, el, speed], i) => {
+  const off = small || still;
+  const shifts = drifting.map(([, , speed], i) => {
     const r = sectionRects[i];
-    const d = Math.max(-600, Math.min(600, h / 2 - (r.top + r.height / 2)));
-    el.style.translate = small || still ? '' : `0 ${d * speed}px`;
+    return off ? 0 : Math.max(-600, Math.min(600, h / 2 - (r.top + r.height / 2))) * speed;
   });
+  if (!off) keepApart(photoRects, shifts);
+  drifting.forEach(([, el], i) => {
+    el.style.translate = off ? '' : `0 ${shifts[i]}px`;
+    applied[i] = off ? 0 : shifts[i];
+  });
+}
+
+// Photos in different sections drift at different speeds, so two photos stacked in the same column could slide
+// into each other. Where that would happen, nudge the pair apart so a gap (at most MIN_GAP) always remains.
+const MIN_GAP = 12;
+const applied = drifting.map(() => 0); // the shift each photo had when its rectangle was last read
+function keepApart(rects, shifts) {
+  const rest = rects.map((r, i) => ({ top: r.top - applied[i], bottom: r.bottom - applied[i], left: r.left, right: r.right }));
+  for (let pass = 0; pass < 3; pass++) {
+    for (let i = 0; i < rest.length; i++) for (let j = i + 1; j < rest.length; j++) {
+      const a = rest[i], b = rest[j];
+      if (Math.min(a.right, b.right) - Math.max(a.left, b.left) <= 0) continue; // not in the same column
+      const [up, low] = a.top <= b.top ? [i, j] : [j, i];
+      const restGap = rest[low].top - rest[up].bottom;
+      if (restGap < 0) continue;
+      const gap = restGap + shifts[low] - shifts[up], want = Math.min(MIN_GAP, restGap);
+      if (gap < want) {
+        const fix = (want - gap) / 2;
+        shifts[low] += fix;
+        shifts[up] -= fix;
+      }
+    }
+  }
 }
 
 // Scroll events only request work; one frame drives all scroll effects.
